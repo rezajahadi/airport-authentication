@@ -15,7 +15,7 @@ class Passport(Base):
     date_of_issue = sa.Column(sa.Date, nullable=False)
     date_of_expiry = sa.Column(sa.Date, nullable=False)
     gender = sa.Column(sa.String(10), nullable=False)
-    passport_number = sa.Column(sa.String(225), nullable=False)
+    passport_number = sa.Column(sa.String(225), nullable=False, unique=True)
     picture = sa.Column(sa.String(225), nullable=False)
 
     visas = sa.orm.relationship("Visa")
@@ -45,7 +45,7 @@ class Officer(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     first_name = sa.Column(sa.String(225), nullable=False)
     last_name = sa.Column(sa.String(225), nullable=False)
-    user_name = sa.Column(sa.String(225), nullable=False)
+    user_name = sa.Column(sa.String(225), nullable=False, unique=True)
     password = sa.Column(sa.String(225), nullable=False)
 
     def __repr__(self):
@@ -199,4 +199,3 @@ class DB:
         officer = self.session.query(Officer).filter_by(user_name=user_name).first()
         self.session.delete(officer)
         self.session.commit()    
-
