@@ -33,7 +33,7 @@ class Visa(Base):
     date_of_expiry = sa.Column(sa.Date, nullable=False)
     type_of_visa = sa.Column(sa.String(225), nullable=False)
     passport_id = sa.Column(sa.Integer, sa.ForeignKey("passports.id"), nullable=False)
-    passport = sa.orm.relationship("Passport")
+    passport = sa.orm.relationship("Passport", overlaps="visas")
 
     def __repr__(self):
         return f"<Visa(id={self.id}, destination={self.destination}, date_of_issue={self.date_of_issue}, date_of_expiry={self.date_of_expiry}, type_of_visa={self.type_of_visa}, passport_id={self.passport_id})>"
