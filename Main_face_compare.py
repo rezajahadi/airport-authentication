@@ -1,42 +1,82 @@
 import cv2
 import numpy as np
-from PIL import Image
+from VGGnet import verifyFace
 import os
 
-from face_recognition import face_recognition
-from face_training import face_training
+def main(pname,tershold=35):
 
-def main(pname,treshold):
-    finalCon = False
+    cascadePath = os.path.dirname(os.path.abspath(__file__)) + "\\trainer\\haarcascade_frontalface_default.xml"
+    faceCascade = cv2.CascadeClassifier(cascadePath)
 
-    face_detector = cv2.CascadeClassifier('.\\trainer\\haarcascade_frontalface_default.xml')
+    font = cv2.FONT_HERSHEY_SIMPLEX
 
-    imagePath = '.\\img\\passenger.jpg'
 
-    PIL_img = Image.open(imagePath).convert('L') # convert it to grayscale
-    gray = np.array(PIL_img,'uint8')
+    # Initialize and start realtime video capture
+    cam = cv2.VideoCapture(0)
+    cam.set(3, 640) # set video widht
+    cam.set(4, 480) # set video height
 
-    faces = face_detector.detectMultiScale(gray, 1.3, 5)
-    for (x,y,w,h) in faces:
+    # Define min window size to be recognized as a face
+    minW = 0.1*cam.get(3)
+    minH = 0.1*cam.get(4)
+    dir = os.path.dirname(os.path.abspath(__file__)) + '\\img\\live.jpg'
+    count = 0
 
-        cv2.rectangle(gray, (x,y), (x+w,y+h), (255,0,0), 2)     
-
-        dir = '.\\dataset\\0.1.jpg'
-        cv2.imwrite(dir, gray[y:y+h,x:x+w])
+    while count<100:
         
-        # cv2.namedWindow("image", cv2.WINDOW_NORMAL)    # Create window with freedom of dimensions
-        # imS = cv2.resize(gray, (200, 300))    
-        # cv2.imshow('image', imS)
+        ret, img =cam.read()
+        count+=1
+        print(count)
 
-    face_training()
-    outPer = face_recognition(pname)
-    if(outPer>treshold):
-        finalCon = True
+        faces = faceCascade.detectMultiScale( 
+            img,
+            scaleFactor = 1.2,
+            minNeighbors = 5,
+            minSize = (int(minW), int(minH)),
+        )
+
+        
+        if count== 99:
+            cv2.imwrite(dir, img)
+        else:
+            for(x,y,w,h) in faces:
+                cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+            
+        cv2.imshow('camera',img) 
+
+        k = cv2.waitKey(1) & 0xff # Press 'ESC' for exiting video
+        if k == 27:
+            break
+        
+    cv2.destroyAllWindows()
+
+    cosine,euclidean = verifyFace("passenger.jpg", 'live.jpg')
     
-    # os.remove('.\\img\\passenger.jpg')
-    # os.remove('.\\dataset\\0.1.jpg')
-    return outPer , finalCon
+    out_confidence = round(100 - euclidean , 5)
+    out =False
+    if out_confidence>tershold:
+        print('they are same!')
+        out = True
+        cv2.putText(img, pname , (x+5,y-5), font, 1, (0,0,255), 2)
+        cv2.putText(img, str(out_confidence), (x+5,y+h-5), font, 1, (255,0,0), 2)  
+    else:
+        cv2.putText(img, "unKnown!" , (x+5,y-5), font, 1, (0,0,255), 2)
+        cv2.putText(img, str(out_confidence), (x+5,y+h-5), font, 1, (255,0,0), 2)
+        
 
-if __name__=='__main__':
-    outPer , finalCon =main('negin',50)
-    print(f' output percentage and final condition is : {outPer} , {finalCon}')
+    while True:
+        cv2.imshow('output',img)
+        k = cv2.waitKey(1) & 0xff # Press 'ESC' for exiting video
+        if k == 27:
+            break
+    
+    
+     
+    cam.release()
+    cv2.destroyAllWindows()
+    
+    return out,out_confidence
+
+if __name__ == '__main__':
+    out,confidence = main('sajjad')
+    print(f' output percentage and final condition is : {out} , {confidence}')

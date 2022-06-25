@@ -54,7 +54,7 @@ class Officer(Base):
 class DB:
     def __init__(self):
         db_url = (
-            "mysql://arsavizi_ashar:FzdqbujHyZLXBD7@168.119.212.5:3306/arsavizi_ashar"
+            "mysql://************************************************************"
         )
         self.engine = sa.create_engine(db_url)
         sessionmaker = sa.orm.sessionmaker(bind=self.engine)
@@ -199,3 +199,9 @@ class DB:
         officer = self.session.query(Officer).filter_by(user_name=user_name).first()
         self.session.delete(officer)
         self.session.commit()    
+
+# db = DB()
+# person = db.get_passport("123456")
+# person = person.__dict__
+# print(person)
+# # print(db.get_all_officers())

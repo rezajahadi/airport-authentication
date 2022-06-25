@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="images">
+    <file>img/faceID.png</file>
+    <file>img/Mehrabad_airport.jpg</file>
+  </qresource>
+</RCC>
