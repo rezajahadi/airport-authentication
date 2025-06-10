@@ -31,10 +31,7 @@ The app loads a deep learning model trained to detect faces in images. When a ne
 - OpenCV 
 - SQLite3
 - Tensorflow
-- See `requirements.txt` for full requirements
 
 ## Credits
 
 The face detection model is a [pre-trained ResNet model](https://drive.google.com/file/d/1CPSeum3HpopfomUEK1gybeuIVoeJT_Eo/view) from Anthropic. The database stores facial embeddings extracted using this model.
-
-Let me know if you would like me to modify or expand this README!
